@@ -19,3 +19,8 @@ interface Student {
   name: string;
   enrolledCourses: number[];
 }
+
+enum Role {
+  STUDENT,
+  TEACHER,
+}
