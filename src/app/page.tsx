@@ -1,6 +1,5 @@
 import { add, get } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export default async function Home() {
   const KEY = "key";
@@ -26,7 +25,7 @@ export default async function Home() {
       <div>
         <p>Result</p>
         <ul>
-          <li>{result}</li>{" "}
+          <li>{result}</li>
         </ul>
       </div>
     </main>
