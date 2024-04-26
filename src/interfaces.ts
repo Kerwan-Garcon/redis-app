@@ -1,7 +1,7 @@
 interface Course {
   id: number;
   title: string;
-  teacher: string;
+  teacherId: number;
   summary: string;
   level: string;
   availableSlots: number;

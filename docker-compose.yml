@@ -1,4 +1,15 @@
 services:
+  database:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: pg-educ
+      POSTGRES_PASSWORD: pg-educ
+      POSTGRES_DB: pg-educ
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
   redis:
     image: "bitnami/redis:latest"
     environment:
@@ -7,6 +18,7 @@ services:
       - .:/bitnami/redis/data
     ports:
       - "6379:6379"
+
   redisInsight:
     image: redis/redisinsight
     ports:
@@ -16,3 +28,4 @@ services:
 
 volumes:
   data: {}
+  postgres-data: {}

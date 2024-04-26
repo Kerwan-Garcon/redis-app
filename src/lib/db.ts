@@ -1,4 +1,5 @@
 import { createClient } from "redis";
+import prisma from "../../prisma/singleton";
 
 const client = createClient({
   socket: {
@@ -15,15 +16,50 @@ if (!client.isOpen) {
   client.connect();
 }
 
-const addCourse = (course: Course) => {
-  const { id, title, teacher, summary, level, availableSlots, expirationDate } =
-    course;
+const addCourse = async (course: Course) => {
+  const {
+    id,
+    title,
+    teacherId,
+    summary,
+    level,
+    availableSlots,
+    expirationDate,
+  } = course;
   const courseKey = `course:${id}`;
-  client.set(
+
+  try {
+    await add(
+      courseKey,
+      JSON.stringify({
+        title,
+        teacherId,
+        summary,
+        level,
+        availableSlots,
+        expirationDate,
+      })
+    );
+
+    await prisma.course.create({
+      data: {
+        id,
+        title,
+        teacherId,
+        summary,
+        level,
+        availableSlots,
+        expirationDate,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+  }
+  add(
     courseKey,
     JSON.stringify({
       title,
-      teacher,
+      teacherId,
       summary,
       level,
       availableSlots,
@@ -40,7 +76,7 @@ const getCourse = (id: number) => {
 const addTeacher = (teacher: Teacher): void => {
   const { id, name, courses } = teacher;
   const teacherKey = `teacher:${id}`;
-  client.set(teacherKey, JSON.stringify({ name, courses }));
+  add(teacherKey, JSON.stringify({ name, courses }));
 };
 
 const getTeacherById = (id: number) => {
@@ -55,7 +91,7 @@ const add = (key: string, value: string) => {
 const addStudent = (student: Student) => {
   const { id, name, enrolledCourses } = student;
   const studentKey = `student:${id}`;
-  client.set(studentKey, JSON.stringify({ name, enrolledCourses }));
+  add(studentKey, JSON.stringify({ name, enrolledCourses }));
 };
 
 const getStudentById = (id: number) => {
