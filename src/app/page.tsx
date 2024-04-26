@@ -1,17 +1,13 @@
-import { add, get } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
 export default async function Home() {
   const KEY = "key";
-  const result = await get(KEY);
 
   const handleSubmit = async (data: FormData) => {
     "use server";
     const text = data.get("text");
 
     if (text) {
-      await add(KEY, text.toString());
-
       revalidatePath("/");
     }
   };
@@ -25,7 +21,7 @@ export default async function Home() {
       <div>
         <p>Result</p>
         <ul>
-          <li>{result}</li>
+          <li></li>
         </ul>
       </div>
     </main>
