@@ -33,11 +33,11 @@ Naviger vers `src/lib/courseNotifications.ts`
 
 RECAP :
 
-Question 1/2 : `prisma/schema.prisma` pour voir le model de données
+Question 1/2 : `prisma/schema.prisma` pour voir le model de données , lancer l'app et cliquer sur profil pour voir le profil. ( subscribe / unsub possible aussi depuis la page des courses, possibilité de bug sur le profil )
 Question 3 :
 
-a FRONT - lancer le projet et selectionner teacher , aller dans le profil & modifier un cours, ou en ajouter un dans la section cours.
-a BACK - Voir les fonctions dans `src/actions/courses.js` & `src/lib/courseNotifications`
+a FRONT - lancer le projet et selectionner teacher , aller dans le profil & modifier un cours, ou en ajouter un dans la section cours. ( pas disponible visuellement & à jour voir back )
+a BACK - Voir les fonctions dans `src/actions/courses.js` & `src/lib/courseNotifications` pour voir comment fonctionne les notifs sur update.
 
 b FRONT - lancer le projet et selectionner student, aller dans courses ( normalement la page actuel ) et cliquer sur s'inscrire à un cours.
 b BACK - voir les fonction dans `src/actions/subscribes.ts` & `src/lib/courseNotifications`
@@ -48,3 +48,5 @@ d BACK - Voir la fonction `refreshCourseExpiration` dans le fichier `src/actions
 Question 4 :
 
 Acceder à la page courses en student ou teacher, puis utiliser la barre de recherche pour filtrer les cours. Il est possible d'ecrire un teacher, nom de cours ... et il cherchera en fonction.
+
+PS :
