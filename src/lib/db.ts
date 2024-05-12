@@ -28,3 +28,8 @@ export const teacherClient = new Redis({
   host: HOST,
   port: PORT,
 });
+
+export const subscriptionClient = new Redis({
+  host: HOST,
+  port: PORT,
+});

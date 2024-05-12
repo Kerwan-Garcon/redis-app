@@ -4,14 +4,14 @@ import prisma from "../../prisma/singleton";
 import { studentClient } from "@/lib/db";
 
 export async function getStudents() {
-  const cachedStudents = await studentClient.get('students');
+  const cachedStudents = await studentClient.get("students");
 
   if (cachedStudents) {
     return JSON.parse(cachedStudents);
   } else {
     const studentsFromDB = await prisma.student.findMany();
-    
-    await studentClient.set('students', JSON.stringify(studentsFromDB));
+
+    await studentClient.set("students", JSON.stringify(studentsFromDB));
 
     return studentsFromDB;
   }
@@ -42,7 +42,10 @@ export async function createStudent(name: string) {
     },
   });
 
-  await studentClient.set(`student:${newStudent.id}`, JSON.stringify(newStudent));
+  await studentClient.set(
+    `student:${newStudent.id}`,
+    JSON.stringify(newStudent)
+  );
 
   return newStudent;
 }
@@ -63,11 +66,24 @@ export async function updateStudent(id: number, name: string) {
 }
 
 export async function deleteStudent(id: number) {
-  await prisma.student.delete({
-    where: {
-      id,
-    },
-  });
+  try {
+    await prisma.subscribedCourse.deleteMany({
+      where: {
+        studentId: id,
+      },
+    });
 
-  await studentClient.del(`student:${id}`);
+    await prisma.student.deleteMany({
+      where: {
+        id: id,
+      },
+    });
+
+    await studentClient.del(`student:${id}`);
+
+    console.log("Student and associated subscriptions deleted successfully.");
+  } catch (error) {
+    console.error("Error deleting student:", error);
+    throw error;
+  }
 }

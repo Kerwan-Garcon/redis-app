@@ -1,3 +1,4 @@
+"use server";
 import { teacherClient } from "@/lib/db";
 import prisma from "../../prisma/singleton";
 
@@ -9,7 +10,10 @@ export async function createTeacher(data) {
       },
     });
 
-    await teacherClient.set(`teacher:${newTeacher.id}`, JSON.stringify(newTeacher));
+    await teacherClient.set(
+      `teacher:${newTeacher.id}`,
+      JSON.stringify(newTeacher)
+    );
 
     return newTeacher;
   } catch (error) {
@@ -20,14 +24,14 @@ export async function createTeacher(data) {
 
 export async function getAllTeachers() {
   try {
-    const cachedTeachers = await teacherClient.get('teachers');
+    const cachedTeachers = await teacherClient.get("teachers");
 
     if (cachedTeachers) {
       return JSON.parse(cachedTeachers);
     } else {
       const teachersFromDB = await prisma.teacher.findMany();
 
-      await teacherClient.set('teachers', JSON.stringify(teachersFromDB));
+      await teacherClient.set("teachers", JSON.stringify(teachersFromDB));
 
       return teachersFromDB;
     }
@@ -76,6 +80,22 @@ export async function updateTeacher(id, data) {
 
 export async function deleteTeacher(id) {
   try {
+    await prisma.subscribedCourse.deleteMany({
+      where: {
+        courseId: {
+          in: {
+            id: id,
+          },
+        },
+      },
+    });
+
+    await prisma.course.deleteMany({
+      where: {
+        id: id,
+      },
+    });
+
     await prisma.teacher.delete({ where: { id } });
 
     await teacherClient.del(`teacher:${id}`);
