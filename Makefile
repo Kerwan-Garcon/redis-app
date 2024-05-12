@@ -12,6 +12,8 @@ run: ## Run the docker stack
 	$(info ********************)
 	$(DOCKER_COMPOSE) up -d
 
+
+
 stop: ## stop the docker stack
 	$(DOCKER_COMPOSE) stop
 
