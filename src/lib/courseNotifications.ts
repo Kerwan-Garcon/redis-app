@@ -62,6 +62,10 @@ sub.on("message", async (channel, message) => {
     const notificationData = JSON.parse(message);
     await expireCourses();
     // Process the notification for the given courseId (e.g., publish to a message queue or send to other clients)
+    // For now, we'll just log the notification ( need websocket implementation to send to client )
+    console.log(
+      `Course ${courseId} has a new notification: ${notificationData.title}`
+    );
   }
 });
 

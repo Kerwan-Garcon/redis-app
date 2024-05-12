@@ -25,3 +25,7 @@ Vérifier l'utilisation de REDIS & MySQL dans le projet :
 Naviguer jusqu'à `src/actions`, ce dossier contient toutes les queries aux bdd.
 Les requêtes utilisent l'orm PRISMA pour SQL et REDIS pour NOSQL.
 Chaque informations nécéssaire est enregistré en mémoire dans REDIS après l'avoir récupérer au moins une fois de POSTGRESQL afin de les récupérer plus rapidement par la suite.
+
+Voir la gestion de pub/sub :
+
+Naviger vers `src/lib/courseNotifications.ts`
