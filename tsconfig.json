@@ -27,6 +27,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/actions/courses.js"
-  ],
+, "src/actions/teachers.js"  ],
   "exclude": ["node_modules"]
 }
