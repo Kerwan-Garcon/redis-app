@@ -47,9 +47,7 @@ export async function createStudent(name: string) {
     JSON.stringify(newStudent)
   );
 
-  const studentsFromDB = await prisma.student.findMany();
-
-  await studentClient.set("students", JSON.stringify(studentsFromDB));
+  await refreshStudentCache();
 
   return newStudent;
 }
@@ -65,6 +63,8 @@ export async function updateStudent(id: number, name: string) {
   });
 
   await studentClient.set(`student:${id}`, JSON.stringify(updatedStudent));
+
+  await refreshStudentCache();
 
   return updatedStudent;
 }
@@ -85,9 +85,17 @@ export async function deleteStudent(id: number) {
 
     await studentClient.del(`student:${id}`);
 
+    await refreshStudentCache();
+
     console.log("Student and associated subscriptions deleted successfully.");
   } catch (error) {
     console.error("Error deleting student:", error);
     throw error;
   }
+}
+
+async function refreshStudentCache() {
+  const studentsFromDB = await prisma.student.findMany();
+
+  await studentClient.set("students", JSON.stringify(studentsFromDB));
 }

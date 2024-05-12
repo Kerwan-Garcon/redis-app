@@ -108,10 +108,18 @@ export async function updateCourse(courseId, data) {
     "A course has been updated"
   );
 
+  await refreshCoursesCache();
+
   return updatedCourse;
 }
 
 export async function deleteCourse(courseId) {
+  await prisma.subscribedCourse.deleteMany({
+    where: {
+      courseId: courseId,
+    },
+  });
+
   await prisma.course.delete({ where: { id: courseId } });
 
   await courseClient.del(`course:${courseId}`);
@@ -121,6 +129,8 @@ export async function deleteCourse(courseId) {
     "Course deleted",
     "A course has been deleted"
   );
+
+  await refreshCoursesCache();
 }
 
 export async function refreshCourseExpiration(courseId) {
@@ -134,6 +144,8 @@ export async function refreshCourseExpiration(courseId) {
       where: { id: course.id },
       data: { expirationDate: newExpirationDate },
     });
+
+    await refreshCoursesCache();
   } catch (error) {
     console.error("Error refreshing course expiration:", error);
     throw error;
@@ -153,8 +165,16 @@ export async function expireCourses() {
         await courseClient.del(`course:${course.id}`);
       }
     }
+
+    await refreshCoursesCache();
   } catch (error) {
     console.error("Error expiring courses:", error);
     throw error;
   }
+}
+
+async function refreshCoursesCache() {
+  const coursesFromDB = await prisma.course.findMany();
+
+  await courseClient.set("courses", JSON.stringify(coursesFromDB));
 }

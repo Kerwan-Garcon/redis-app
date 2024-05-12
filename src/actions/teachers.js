@@ -15,9 +15,7 @@ export async function createTeacher(data) {
       JSON.stringify(newTeacher)
     );
 
-    const teachersFromDB = await prisma.teacher.findMany();
-
-    await teacherClient.set("teachers", JSON.stringify(teachersFromDB));
+    await refreshTeachersCache();
 
     return newTeacher;
   } catch (error) {
@@ -75,6 +73,8 @@ export async function updateTeacher(id, data) {
 
     await teacherClient.set(`teacher:${id}`, JSON.stringify(updatedTeacher));
 
+    await refreshTeachersCache();
+
     return updatedTeacher;
   } catch (error) {
     console.error("Error updating teacher:", error);
@@ -103,8 +103,21 @@ export async function deleteTeacher(id) {
     await prisma.teacher.delete({ where: { id } });
 
     await teacherClient.del(`teacher:${id}`);
+
+    await refreshTeachersCache();
   } catch (error) {
     console.error("Error deleting teacher:", error);
+    throw error;
+  }
+}
+
+async function refreshTeachersCache() {
+  try {
+    const teachersFromDB = await prisma.teacher.findMany();
+
+    await teacherClient.set("teachers", JSON.stringify(teachersFromDB));
+  } catch (error) {
+    console.error("Error refreshing teachers cache:", error);
     throw error;
   }
 }
