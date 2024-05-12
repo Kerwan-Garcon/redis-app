@@ -1,45 +1,42 @@
-"use server";
-
+import { courseClient } from "@/lib/db";
 import prisma from "../../prisma/singleton";
 
-export const createCourse = async (data) => {
-  const course = await prisma.course.create({ data });
-  return course;
-};
+export async function createCourse(data) {
+  const newCourse = await prisma.course.create({ data });
 
-export const getCourseById = async (courseId) => {
-  const course = await prisma.course.findUnique({ where: { id: courseId } });
-  return course;
-};
+  await courseClient.set(`course:${newCourse.id}`, JSON.stringify(newCourse));
 
-export const updateCourse = async (courseId, data) => {
+  return newCourse;
+}
+
+export async function getCourseById(courseId) {
+  const cachedCourse = await courseClient.get(`course:${courseId}`);
+
+  if (cachedCourse) {
+    return JSON.parse(cachedCourse);
+  } else {
+    const courseFromDB = await prisma.course.findUnique({ where: { id: courseId } });
+
+    await courseClient.set(`course:${courseId}`, JSON.stringify(courseFromDB));
+
+    return courseFromDB;
+  }
+}
+
+export async function updateCourse(courseId, data) {
   const updatedCourse = await prisma.course.update({
     where: { id: courseId },
     data,
   });
+
+  await courseClient.set(`course:${courseId}`, JSON.stringify(updatedCourse));
+
   return updatedCourse;
-};
+}
 
-export const deleteCourse = async (courseId) => {
-  const deletedCourse = await prisma.course.delete({ where: { id: courseId } });
-  return deletedCourse;
-};
+export async function deleteCourse(courseId) {
+  await prisma.course.delete({ where: { id: courseId } });
 
+  await courseClient.del(`course:${courseId}`);
+}
 
-export const coursesByTitle = await prisma.course.findMany({
-  where: {
-    title: {
-      contains: searchString,
-    },
-  },
-});
-
-export const coursesByTeacher = await prisma.course.findMany({
-  where: {
-    teacher: {
-      name: {
-        contains: searchString,
-      },
-    },
-  },
-});
