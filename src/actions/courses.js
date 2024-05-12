@@ -14,6 +14,10 @@ export async function createCourse(data) {
     "A new course has been created"
   );
 
+  const coursesFromDB = await prisma.course.findMany();
+
+  await courseClient.set("courses", JSON.stringify(coursesFromDB));
+
   return newCourse;
 }
 

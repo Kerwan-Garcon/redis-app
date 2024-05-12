@@ -15,6 +15,10 @@ export async function createTeacher(data) {
       JSON.stringify(newTeacher)
     );
 
+    const teachersFromDB = await prisma.teacher.findMany();
+
+    await teacherClient.set("teachers", JSON.stringify(teachersFromDB));
+
     return newTeacher;
   } catch (error) {
     console.error("Error creating teacher:", error);

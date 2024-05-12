@@ -47,6 +47,10 @@ export async function createStudent(name: string) {
     JSON.stringify(newStudent)
   );
 
+  const studentsFromDB = await prisma.student.findMany();
+
+  await studentClient.set("students", JSON.stringify(studentsFromDB));
+
   return newStudent;
 }
 

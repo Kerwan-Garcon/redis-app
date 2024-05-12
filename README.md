@@ -8,9 +8,9 @@ Avoir docker sur l'ordinateur.
 
 Lancer les bases de données :
 
-make install
-make run
-npx prisma db seed
+make install ( install les deps )
+make run ( run les containers )
+npx prisma db seed ( run minimum fake datas )
 
 configurer redis insinght pour y ajouter les informations de la bdd pour la voir visuellement.
 host: redis
