@@ -24,7 +24,7 @@ export async function subscribeToCourse(studentId: number, courseId: number) {
   revalidatePath("/profile");
 }
 
-export async function  getSubscribedCourses(studentId: number) {
+export async function getSubscribedCourses(studentId: number) {
   try {
     const subscribedCourseIds = await subscriptionClient.smembers(
       `student:${studentId}:courses`
@@ -58,6 +58,7 @@ export async function unsubscribeFromCourse(
         courseId,
       },
     });
+
   } catch (error) {
     console.error("Error unsubscribing from course:", error);
     throw error;
