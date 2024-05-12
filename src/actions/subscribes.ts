@@ -1,10 +1,11 @@
-"use server"
+"use server";
 
 import { subscriptionClient } from "@/lib/db";
 import prisma from "../../prisma/singleton";
 import { subscribeStudentToCourseNotifications } from "@/lib/courseNotifications";
+import { revalidatePath } from "next/cache";
 
-export async function subscribeToCourse(studentId:number, courseId:number) {
+export async function subscribeToCourse(studentId: number, courseId: number) {
   try {
     const subscribedCourse = await prisma.subscribedCourse.create({
       data: {
@@ -15,17 +16,19 @@ export async function subscribeToCourse(studentId:number, courseId:number) {
 
     await subscriptionClient.sadd(`student:${studentId}:courses`, courseId);
     await subscribeStudentToCourseNotifications(studentId, courseId);
-
-    return subscribedCourse;
   } catch (error) {
     console.error("Error subscribing to course:", error);
     throw error;
   }
+  revalidatePath("/courses");
+  revalidatePath("/profile");
 }
 
-export async function getSubscribedCourses(studentId:number) {
+export async function  getSubscribedCourses(studentId: number) {
   try {
-    const subscribedCourseIds = await subscriptionClient.smembers(`student:${studentId}:courses`);
+    const subscribedCourseIds = await subscriptionClient.smembers(
+      `student:${studentId}:courses`
+    );
 
     const courses = await prisma.course.findMany({
       where: {
@@ -42,7 +45,10 @@ export async function getSubscribedCourses(studentId:number) {
   }
 }
 
-export async function unsubscribeFromCourse(studentId:number, courseId:number) {
+export async function unsubscribeFromCourse(
+  studentId: number,
+  courseId: number
+) {
   try {
     await subscriptionClient.srem(`student:${studentId}:courses`, courseId);
 
@@ -52,9 +58,10 @@ export async function unsubscribeFromCourse(studentId:number, courseId:number) {
         courseId,
       },
     });
-
   } catch (error) {
     console.error("Error unsubscribing from course:", error);
     throw error;
   }
+  revalidatePath("/courses");
+  revalidatePath("/profile");
 }

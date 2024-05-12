@@ -8,11 +8,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { SquarePlus } from "lucide-react";
-import { createCourse } from "@/actions/courses";
+import { createCourse, updateCourse } from "@/actions/courses";
 import { useState } from "react";
 import { Textarea } from "../ui/textarea";
 
@@ -25,16 +34,27 @@ export default function Formulaire({ description }) {
   const [content, setContent] = useState("");
 
   async function submitForm() {
+    const twoWeeksFromNow = new Date();
+    twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
     const course = {
       title: title,
-      teacher: teacher,
       level: level,
-      availableSlots: availableSlots,
+      availableSlots: parseInt(availableSlots),
       summary: summary,
       content: content,
+      teacher: {
+        connect: {
+          id: parseInt("1"),
+        },
+      },
+      level: "Beginner",
+      expirationDate: twoWeeksFromNow,
     };
-
-    await createCourse(course);
+    if (description === "Modifier le cours") {
+      await updateCourse(course);
+    } else {
+      await createCourse(course);
+    }
   }
 
   return (
@@ -98,6 +118,21 @@ export default function Formulaire({ description }) {
                 className="col-span-3"
               />
             </div>
+            <Select
+                  defaultValue="Biginner"
+                  onValueChange={(e) => setLevel(e.target.value)}
+                >
+                  <SelectTrigger className="w-[280px]">
+                    <SelectValue placeholder="Choisir un niveau" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="Biginner">Biginner</SelectItem>
+                      <SelectItem value="Intermediate">Intermediate</SelectItem>
+                      <SelectItem value="Advanced">Advanced</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
           </div>
           <DialogFooter>
             <Button type="submit">Save changes</Button>

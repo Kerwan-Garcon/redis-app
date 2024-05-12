@@ -2,10 +2,10 @@
 import { courseClient } from "@/lib/db";
 import prisma from "../../prisma/singleton";
 import { publishCourseNotification } from "@/lib/courseNotifications";
+import { revalidatePath } from "next/cache";
 
 export async function createCourse(data) {
   const newCourse = await prisma.course.create({ data });
-
   await courseClient.set(`course:${newCourse.id}`, JSON.stringify(newCourse));
 
   await publishCourseNotification(
@@ -14,6 +14,11 @@ export async function createCourse(data) {
     "A new course has been created"
   );
 
+  const coursesFromDB = await prisma.course.findMany();
+
+  await courseClient.set("courses", JSON.stringify(coursesFromDB));
+
+  revalidatePath("/courses");
   return newCourse;
 }
 
@@ -64,11 +69,6 @@ export async function searchCourses(searchQuery) {
               },
             },
           },
-          {
-            level: {
-              equals: searchQuery,
-            },
-          },
         ],
       },
       include: {
@@ -108,6 +108,7 @@ export async function updateCourse(courseId, data) {
 }
 
 export async function deleteCourse(courseId) {
+  console.log("Deleting course:", courseId);
   await prisma.course.delete({ where: { id: courseId } });
 
   await courseClient.del(`course:${courseId}`);

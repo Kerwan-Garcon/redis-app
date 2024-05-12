@@ -1,11 +1,16 @@
-import Formulaire from "@/components/forms/formulaire";
-import { Button } from "@/components/ui/button";
-import { Pencil } from "lucide-react";
-export default function CourseDetails() {
+"use server";
+import { getCourseById } from "@/actions/courses";
+import CourseDetail from "@/components/CourseDetail";
+import Navbar from "@/components/Navbar";
+export default async function CourseDetails({
+  params,
+  searchParams: { type },
+}) {
+  const course = await getCourseById(params.id);
   return (
-    <div>
-      <Formulaire description={"Modifier le cours"} />
-      Mon cours
-    </div>
+  <>
+    <Navbar type={type} />
+    <CourseDetail type={type} params={params.id} course={course} />;
+  </>
   );
 }

@@ -12,15 +12,15 @@ datasource db {
 
 model Course {
   id              Int              @id @default(autoincrement())
-  title           String
-  teacher         Teacher          @relation(fields: [teacherId], references: [id])
-  teacherId       Int
-  content         String           @default("")
-  summary         String
-  level           Level
-  availableSlots  Int
-  expirationDate  DateTime
-  students        Student[]   
+  title           String?
+  teacher         Teacher?         @relation(fields: [teacherId], references: [id])
+  teacherId       Int?
+  content         String?           @default("")
+  summary         String?
+  level           Level?
+  availableSlots  Int?
+  expirationDate  DateTime? 
+  students        Student[]
   subscribedCourses SubscribedCourse[]
 }
 
