@@ -1,29 +1,54 @@
 "use server";
 
 import prisma from "../../prisma/singleton";
+import { studentClient } from "@/lib/db";
 
 export async function getStudents() {
-  return prisma.student.findMany();
+  const cachedStudents = await studentClient.get('students');
+
+  if (cachedStudents) {
+    return JSON.parse(cachedStudents);
+  } else {
+    const studentsFromDB = await prisma.student.findMany();
+    
+    await studentClient.set('students', JSON.stringify(studentsFromDB));
+
+    return studentsFromDB;
+  }
 }
 
 export async function getStudentById(id: number) {
-  return prisma.student.findUnique({
-    where: {
-      id,
-    },
-  });
+  const cachedStudent = await studentClient.get(`student:${id}`);
+
+  if (cachedStudent) {
+    return JSON.parse(cachedStudent);
+  } else {
+    const studentFromDB = await prisma.student.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    await studentClient.set(`student:${id}`, JSON.stringify(studentFromDB));
+
+    return studentFromDB;
+  }
 }
 
 export async function createStudent(name: string) {
-  return prisma.student.create({
+  const newStudent = await prisma.student.create({
     data: {
       name,
     },
   });
+
+  await studentClient.set(`student:${newStudent.id}`, JSON.stringify(newStudent));
+
+  return newStudent;
 }
 
 export async function updateStudent(id: number, name: string) {
-  return prisma.student.update({
+  const updatedStudent = await prisma.student.update({
     where: {
       id,
     },
@@ -31,12 +56,18 @@ export async function updateStudent(id: number, name: string) {
       name,
     },
   });
+
+  await studentClient.set(`student:${id}`, JSON.stringify(updatedStudent));
+
+  return updatedStudent;
 }
 
 export async function deleteStudent(id: number) {
-  return prisma.student.delete({
+  await prisma.student.delete({
     where: {
       id,
     },
   });
+
+  await studentClient.del(`student:${id}`);
 }

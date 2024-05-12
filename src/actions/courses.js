@@ -24,3 +24,22 @@ export const deleteCourse = async (courseId) => {
   const deletedCourse = await prisma.course.delete({ where: { id: courseId } });
   return deletedCourse;
 };
+
+
+export const coursesByTitle = await prisma.course.findMany({
+  where: {
+    title: {
+      contains: searchString,
+    },
+  },
+});
+
+export const coursesByTeacher = await prisma.course.findMany({
+  where: {
+    teacher: {
+      name: {
+        contains: searchString,
+      },
+    },
+  },
+});
