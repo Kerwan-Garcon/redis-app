@@ -10,7 +10,7 @@ export default async function CourseDetails({
   return (
   <>
     <Navbar type={type} />
-    <CourseDetail type={type} params={params.id} course={course} />;
+    <CourseDetail type={type} params={params.id} course={course} />
   </>
   );
 }

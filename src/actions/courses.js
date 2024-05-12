@@ -128,6 +128,7 @@ export async function deleteCourse(courseId) {
   );
 
   await refreshCoursesCache();
+  revalidatePath("/courses");
 }
 
 export async function refreshCourseExpiration(courseId) {

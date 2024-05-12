@@ -16,7 +16,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -24,10 +24,10 @@ import { SquarePlus } from "lucide-react";
 import { createCourse, updateCourse } from "@/actions/courses";
 import { useState } from "react";
 import { Textarea } from "../ui/textarea";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 export default function Formulaire({ description }) {
   const [title, setTitle] = useState("");
-  const [teacher, setTeacher] = useState("");
   const [level, setLevel] = useState("");
   const [availableSlots, setAvailableSlots] = useState("");
   const [summary, setSummary] = useState("");
@@ -47,7 +47,6 @@ export default function Formulaire({ description }) {
           id: parseInt("1"),
         },
       },
-      level: "Beginner",
       expirationDate: twoWeeksFromNow,
     };
     if (description === "Modifier le cours") {
@@ -118,24 +117,29 @@ export default function Formulaire({ description }) {
                 className="col-span-3"
               />
             </div>
-            <Select
-                  defaultValue="Biginner"
-                  onValueChange={(e) => setLevel(e.target.value)}
-                >
-                  <SelectTrigger className="w-[280px]">
-                    <SelectValue placeholder="Choisir un niveau" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="Biginner">Biginner</SelectItem>
-                      <SelectItem value="Intermediate">Intermediate</SelectItem>
-                      <SelectItem value="Advanced">Advanced</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label>Niveau</Label>
+              <Select
+                onValueChange={(value) => setLevel(value)}
+                defaultValue="Biginner"
+              >
+                <SelectTrigger className="w-[280px]">
+                  <SelectValue placeholder="Choisir un niveau" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="Biginner">Biginner</SelectItem>
+                    <SelectItem value="Intermediate">Intermediate</SelectItem>
+                    <SelectItem value="Advanced">Advanced</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Save changes</Button>
+            <DialogClose asChild>
+              <Button type="submit">Save changes</Button>
+            </DialogClose>
           </DialogFooter>
         </form>
       </DialogContent>

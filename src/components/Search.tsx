@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "./ui/input";
 import { use, useEffect, useState } from "react";
-import { searchCourses } from "@/actions/courses";
+import { deleteCourse, searchCourses } from "@/actions/courses";
 import {
   Card,
   CardContent,
@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/card";
 import SubscribeCourse from "./SubscribeCourse";
 import Link from "next/link";
+import { Delete } from "lucide-react";
+import { unsubscribeFromCourse } from "@/actions/subscribes";
 
 export default function Search({ courses, isTeacher, courseSubscribed }) {
   const [search, setSearch] = useState("");
@@ -29,14 +31,14 @@ export default function Search({ courses, isTeacher, courseSubscribed }) {
   return (
     <>
       <h1 className="text-2xl uppercase font-bold">Recherche de cours </h1>
-      <form action={handleSearch}>
+      <form className="flex gap-4" action={handleSearch}>
         <Input
           placeholder="Recherche"
           onChange={(e) => setSearch(e.target.value)}
         />
         <Button>Search</Button>
       </form>
-      <div className="flex flex-wrap gap-4">
+      <div className="flex w-full flex-wrap gap-4 justify-center">
         {searchResults.map((course) => (
           <Card
             key={course.id}
@@ -44,10 +46,26 @@ export default function Search({ courses, isTeacher, courseSubscribed }) {
           >
             <CardHeader className="flex justify-between">
               <CardTitle className="flex justify-between">
-                <SubscribeCourse
-                  course={course}
-                  courseSubscribed={courseSubscribed}
-                />
+                {isTeacher == "student" ? (
+                  <SubscribeCourse
+                    course={course}
+                    courseSubscribed={courseSubscribed}
+                    type={isTeacher}
+                  />
+                ) : (
+                  <>
+                    {course.title}
+                    <Button
+                      variant={"destructive"}
+                      onClick={(e) => {
+                        deleteCourse(parseInt(course.id));
+                      }}
+                    >
+                      <Delete className="mr-2 h-4 w-4" />
+                      <p>Supprimer</p>{" "}
+                    </Button>
+                  </>
+                )}
               </CardTitle>
             </CardHeader>
             <Link href={`/courses/${course.id}?type=${isTeacher}`}>

@@ -45,6 +45,7 @@ export default async function Profile({ searchParams: { type } }) {
                     <SubscribeCourse
                       course={course}
                       courseSubscribed={courses}
+                      type={type}
                     />
                   </CardTitle>
                 </CardHeader>
